@@ -1,0 +1,12 @@
+; https://es-static.fbk.eu/people/griggio/misc/smtlib2parser.html
+(set-option :produce-models true)
+(declare-fun A () Bool)
+(declare-fun B () Bool)
+(declare-fun x () Real)
+(assert A) 
+(assert (not B))
+(assert (! (or A (! B :named BB)) :named orAB))
+(assert (>= x (/ (- 1) 10)))
+(check-sat)
+(get-value ((and A B) x))
+(exit)

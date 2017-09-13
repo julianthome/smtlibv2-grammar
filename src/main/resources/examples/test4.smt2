@@ -1,0 +1,10 @@
+; https://es-static.fbk.eu/people/griggio/misc/smtlib2parser.html
+(set-option :produce-assignments true)
+(declare-fun A () Bool)
+(declare-fun B () Bool)
+(assert A) 
+(assert (not B))
+(assert (! (or A (! B :named BB)) :named orAB))
+(check-sat)
+(get-assignment)
+(exit)

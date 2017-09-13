@@ -1,7 +1,7 @@
 /**
  * SMT-LIB (v2.6) grammar
  *
- * based on http://smtlib.cs.uiowa.edu/papers/smt-lib-reference-v2.6-r2017-07-18.pdf
+ * http://smtlib.cs.uiowa.edu/papers/smt-lib-reference-v2.6-r2017-07-18.pdf
  *
  * The MIT License (MIT)
  *
@@ -28,50 +28,98 @@
 
 grammar SMT2;
 
-// fragments
-fragment UnderscoreAlphaNumerics
-    : ('_' | AlphaNumeric)+
+
+
+String
+    : '"' (PrintableChar | WhiteSpaceChar)+ '"'
     ;
 
-fragment AlphaNumerics
-    : AlphaNumeric+
+QuotedSymbol
+    : '|' (PrintableCharNoBackslash | WhiteSpaceChar)+ '|'
     ;
 
-fragment AlphaNumeric
-    : [a-zA-Z0-9]
+SimpleSymbol
+    : Sym (Digit | Sym)*
     ;
 
-fragment NonAlphaNumeric
-    : ~[a-zA-Z0-9]
+Numeral
+    : '0'
+    | [1-9] Digit*
     ;
 
-fragment HexDigit
-    : [0-9a-fA-F]
+Exclamation
+    : '!'
     ;
 
-fragment ASCII
-    : [\u0000-\u007F]
+Colon
+    : ':'
     ;
 
-fragment Numeral
-    : ('0' | [1-9])+
+fragment Digit
+    : [0-9]
     ;
+
+fragment Sym
+    : 'a'..'z'
+    | 'A' .. 'Z'
+    | '+'
+    | '='
+    | '/'
+    | '*'
+    | '%'
+    | '?'
+    | '!'
+    | '$'
+    | '-'
+    | '_'
+    | '~'
+    | '&'
+    | '^'
+    | '<'
+    | '>'
+    | '@'
+    ;
+
+ParOpen
+    : '('
+    ;
+
+ParClose
+    : ')'
+    ;
+
+Binary:
+    BinaryDigit+
+    ;
+
+HexDigit
+    : '0' .. '9' | 'a' .. 'f' | 'A' .. 'F'
+    ;
+
+HexDecimal
+    : '#x' HexDigit HexDigit HexDigit HexDigit
+    ;
+
+Decimal
+    : Numeral '.' '0'* Numeral
+    ;
+
 
 fragment BinaryDigit
     : [01]
     ;
 
 fragment PrintableChar
-    : [\u0020-\u007E]
-    | [\u0080-\uffff]
+    : '\u0020' .. '\u007E'
+    | '\u0080' .. '\uffff'
     | EscapedSpace
     ;
 
 fragment PrintableCharNoBackslash
-    : [\u0020-\u005B]
-    | [\u005D-\u007B]
-    | [\u007D\u007E]
-    | [\u0080-\uffff]
+    : '\u0020' .. '\u005B'
+    | '\u005D' .. '\u007B'
+    | '\u007D' .. '\u007E'
+    | '\u0080' .. '\uffff'
     | EscapedSpace
     ;
 
@@ -79,42 +127,21 @@ fragment EscapedSpace
     : '""'
     ;
 
-fragment ReservedWord
-    : 'BINARY'
-    | 'DECIMAL'
-    | 'HEXADECIMAL'
-    | 'NUMERAL'
-    | 'STRING'
-    | '_'
-    | '!'
-    | 'as'
-    | 'let'
-    | 'exists'
-    | 'forall'
-    | 'match'
-    | 'par'
-    ;
-
 fragment WhiteSpaceChar
-    : [\u0009\u000A\u000D\u0020]
+    : '\u0009' | '\u000A' | '\u000D' | '\u0020'
     ;
 
-fragment Digit
-    : [0-9]
+
+
+// Starting rule(s)
+
+start
+    : script EOF
     ;
 
-fragment Letter
-    : [a-zA-Z]
+response
+    : general_response EOF
     ;
-
-fragment ParOpen
-    : '('
-    ;
-
-fragment ParClose
-    : ')'
-    ;
-
 
 // Lexicon
 
@@ -123,35 +150,28 @@ numeral
     ;
 
 decimal
-    : Numeral '.' '0'* numeral
+    : Decimal
     ;
 
 hexadecimal
-    : '#x' HexDigit+;
+    : HexDecimal
+    ;
 
 binary
-    : BinaryDigit+;
+    : Binary
+    ;
 
 string
-    : '"' (PrintableChar | EscapedSpace | WhiteSpaceChar)+ '"' ;
-
-reserved
-    : ReservedWord;
-
-quoted_symbol
-    : '|' (PrintableCharNoBackslash | WhiteSpaceChar)+ '|';
-
-simple_symbol
-    : (Letter | Digit)+
+    : String
     ;
 
 symbol
-    : quoted_symbol
-    | simple_symbol
+    : SimpleSymbol
+    | QuotedSymbol
     ;
 
 keyword
-    : ':' simple_symbol
+    : Colon SimpleSymbol
     ;
 
 // S-expression
@@ -329,6 +349,11 @@ prop_literal
     | ParOpen 'not' symbol ParClose
     ;
 
+
+script
+    : command*
+    ;
+
 command
     : ParOpen 'assert' term ParClose
     | ParOpen 'check-sat' ParClose
@@ -338,6 +363,13 @@ command
     // cardinalitiees for sort_dec and datatype_dec have to be n+1
     | ParOpen 'declare-datatypes' ParOpen sort_dec+ ParClose ParOpen
     datatype_dec+ ParClose ParClose
+    | ParOpen 'declare-fun' symbol ParOpen sort* ParClose sort ParClose
+    | ParOpen 'declare-sort' symbol numeral ParClose
+    | ParOpen 'define-fun'  function_def ParClose
+    | ParOpen 'define-fun-rec' function_def ParClose
+    // cardinalitiees for function_dec and term have to be n+1
+    | ParOpen 'define-funs-rec' ParOpen function_dec+ ParClose
+    ParOpen term+ ParClose ParClose
     | ParOpen 'define-sort' symbol ParOpen symbol* ParClose sort ParClose
     | ParOpen 'echo' string ParClose
     | ParOpen 'exit' ParClose
@@ -359,9 +391,6 @@ command
     | ParOpen 'set-option' option ParClose
     ;
 
-script
-    : command*
-    ;
 
 b_value
     : 'true'
@@ -413,7 +442,7 @@ reason_unknown
 model_response
     : ParOpen 'define-fun' function_def ParClose
     | ParOpen 'define-fun-ref' function_def ParClose
-    // cardinalitiees for sort_dec and datatype_dec have to be n+1
+    // cardinalitiees for function_dec and term have to be n+1
     | ParOpen 'define-funs-rec' ParOpen function_dec+ ParClose ParOpen term+
     ParClose ParClose
     ;
@@ -504,16 +533,9 @@ general_response
     ;
 
 
+Comment
+    : ';' ~[\r\n]* -> channel(HIDDEN)
+    ;
 
-
-
-
-
-
-
-
-
-
-
-
-
+WS  :  [ \t\r\n]+ -> skip
+    ;
