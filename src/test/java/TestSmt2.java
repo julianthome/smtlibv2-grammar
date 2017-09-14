@@ -24,7 +24,7 @@ public class TestSmt2 {
     public void testParser() {
 
         String gfile = TestSmt2.class.getClassLoader().getResource
-                ("SMT2.g4")
+                ("SMTLIBv2Parser.g4")
                 .getFile();
 
         File f = new File(gfile);
@@ -58,11 +58,16 @@ public class TestSmt2 {
             try {
                 gp.parse(fil, "start", GenericParser
                         .CaseSensitiveType.NONE);
+
+
+                LOGGER.debug("St {}", dlist.getAst().toString());
+
             } catch (IllegalWorkflowException |
                     ParsingException | FileNotFoundException e) {
                 LOGGER.error(e.getMessage());
                 Assert.assertTrue(false);
             }
+
 
             LOGGER.info("file {}", dlist.getAst().toDot());
         }
