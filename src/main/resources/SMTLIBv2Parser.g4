@@ -1,6 +1,7 @@
 /**
  * SMT-LIB (v2.6) grammar
  *
+ * Grammar is baesd on the following specification:
  * http://smtlib.cs.uiowa.edu/papers/smt-lib-reference-v2.6-r2017-07-18.pdf
  *
  * The MIT License (MIT)
@@ -49,7 +50,7 @@ ParClose
 
 // Command names
 
-fragment Commands
+fragment Command
     : CMD_Assert
     | CMD_CheckSat
     | CMD_CheckSatAssuming
@@ -177,7 +178,7 @@ CMD_SetOption
 
 
 SimpleSymbol
-    : PredefSymbols
+    : PredefSymbol
     | Sym (Digit | Sym)*
     ;
 
@@ -189,7 +190,7 @@ Numeral
 
 // Predefined Symbols
 
-PredefSymbols
+PredefSymbol
     : PS_Not
     | PS_Bool
     | PS_ContinuedExecution
@@ -233,13 +234,13 @@ PS_Logic
     : 'logic'
     ;
 PS_Memout
-    : 'Memout'
+    : 'memout'
     ;
 PS_Sat
-    : 'Sat'
+    : 'sat'
     ;
 PS_Success
-    : 'Success'
+    : 'success'
     ;
 PS_Theory
     : 'theory'
@@ -260,7 +261,7 @@ PS_Unsat
 
 // Predefined Keywords
 
-fragment PredefKeywords
+fragment PredefKeyword
     : PK_AllStatistics
     | PK_AssertionStackLevels
     | PK_Authors
@@ -430,7 +431,8 @@ PK_Version
 
 
 Keyword
-    : Colon SimpleSymbol
+    : PredefKeyword
+    | Colon SimpleSymbol
     ;
 
 
@@ -439,7 +441,7 @@ Keyword
 
 // General reserved words
 
-fragment GeneralReservedWords
+fragment GeneralReservedWord
     : GRW_Exclamation
     | GRW_Underscore
     | GRW_As
@@ -699,6 +701,7 @@ term
     | ParOpen GRW_Exists ParOpen sorted_var+ ParClose term ParClose
     | ParOpen GRW_Match term ParOpen match_case+ ParClose ParClose
     | ParOpen GRW_Exclamation term attribute+ ParClose
+    | ParOpen PS_Not term ParClose
     ;
 
 
@@ -795,41 +798,161 @@ script
     : command*
     ;
 
+cmd_assert
+    : CMD_Assert
+    ;
+
+cmd_checkSat
+    : CMD_CheckSat
+    ;
+
+cmd_checkSatAssuming
+    : CMD_CheckSatAssuming
+    ;
+
+cmd_declareConst
+    : CMD_DeclareConst
+    ;
+
+cmd_declareDatatype
+    : CMD_DeclareDatatype
+    ;
+
+cmd_declareDatatypes
+    : CMD_DeclareDatatypes
+    ;
+
+cmd_declareFun
+    : CMD_DeclareFun
+    ;
+
+cmd_declareSort
+    : CMD_DeclareSort
+    ;
+
+cmd_defineFun
+    : CMD_DefineFun
+    ;
+
+cmd_defineFunRec
+    : CMD_DefineFunRec
+    ;
+
+cmd_defineFunsRec
+    : CMD_DefineFunsRec
+    ;
+
+cmd_defineSort
+    : CMD_DefineSort
+    ;
+
+cmd_echo
+    : CMD_Echo
+    ;
+
+cmd_exit
+    : CMD_Exit
+    ;
+
+cmd_getAssertions
+    : CMD_GetAssertions
+    ;
+
+cmd_getAssignment
+    : CMD_GetAssignment
+    ;
+
+cmd_getInfo
+    : CMD_GetInfo
+    ;
+
+cmd_getModel
+    : CMD_GetModel
+    ;
+
+cmd_getOption
+    : CMD_GetOption
+    ;
+
+cmd_getProof
+    : CMD_GetProof
+    ;
+
+cmd_getUnsatAssumptions
+    : CMD_GetUnsatAssumptions
+    ;
+
+cmd_getUnsatCore
+    : CMD_GetUnsatCore
+    ;
+
+cmd_getValue
+    : CMD_GetValue
+    ;
+
+cmd_pop
+    : CMD_Pop
+    ;
+
+cmd_push
+    : CMD_Push
+    ;
+
+cmd_reset
+    : CMD_Reset
+    ;
+
+cmd_resetAssertions
+    : CMD_ResetAssertions
+    ;
+
+cmd_setInfo
+    : CMD_SetInfo
+    ;
+
+cmd_setLogic
+    : CMD_SetLogic
+    ;
+
+cmd_setOption
+    : CMD_SetOption
+    ;
+
 command
-    : ParOpen CMD_Assert term ParClose
-    | ParOpen CMD_CheckSat ParClose
-    | ParOpen CMD_CheckSatAssuming ParClose
-    | ParOpen CMD_DeclareConst symbol sort ParClose
-    | ParOpen CMD_DeclareDatatype symbol datatype_dec ParClose
+    : ParOpen cmd_assert term ParClose
+    | ParOpen cmd_checkSat ParClose
+    | ParOpen cmd_checkSatAssuming ParClose
+    | ParOpen cmd_declareConst symbol sort ParClose
+    | ParOpen cmd_declareDatatype symbol datatype_dec ParClose
     // cardinalitiees for sort_dec and datatype_dec have to be n+1
-    | ParOpen CMD_DeclareDatatypes ParOpen sort_dec+ ParClose ParOpen
+    | ParOpen cmd_declareDatatypes ParOpen sort_dec+ ParClose ParOpen
     datatype_dec+ ParClose ParClose
-    | ParOpen CMD_DeclareFun symbol ParOpen sort* ParClose sort ParClose
-    | ParOpen CMD_DeclareSort symbol numeral ParClose
-    | ParOpen CMD_DefineFun function_def ParClose
-    | ParOpen CMD_DefineFunRec function_def ParClose
+    | ParOpen cmd_declareFun symbol ParOpen sort* ParClose sort ParClose
+    | ParOpen cmd_declareSort symbol numeral ParClose
+    | ParOpen cmd_defineFun function_def ParClose
+    | ParOpen cmd_defineFunRec function_def ParClose
     // cardinalitiees for function_dec and term have to be n+1
-    | ParOpen CMD_DefineFunRec ParOpen function_dec+ ParClose
+    | ParOpen cmd_defineFunsRec ParOpen function_dec+ ParClose
     ParOpen term+ ParClose ParClose
-    | ParOpen CMD_DefineSort symbol ParOpen symbol* ParClose sort ParClose
-    | ParOpen CMD_Echo string ParClose
-    | ParOpen CMD_Exit ParClose
-    | ParOpen CMD_GetAssertions ParClose
-    | ParOpen CMD_GetAssignment ParClose
-    | ParOpen CMD_GetInfo info_flag ParClose
-    | ParOpen CMD_GetModel ParClose
-    | ParOpen CMD_GetOption keyword ParClose
-    | ParOpen CMD_GetProof ParClose
-    | ParOpen CMD_GetUnsatAssumptions ParClose
-    | ParOpen CMD_GetUnsatCore ParClose
-    | ParOpen CMD_GetValue ParOpen term+ ParClose ParClose
-    | ParOpen CMD_Pop numeral ParClose
-    | ParOpen CMD_Push numeral ParClose
-    | ParOpen CMD_Reset ParClose
-    | ParOpen CMD_ResetAssertions ParClose
-    | ParOpen CMD_SetInfo attribute ParClose
-    | ParOpen CMD_SetLogic symbol ParClose
-    | ParOpen CMD_SetOption option ParClose
+    | ParOpen cmd_defineSort symbol ParOpen symbol* ParClose sort ParClose
+    | ParOpen cmd_echo string ParClose
+    | ParOpen cmd_exit ParClose
+    | ParOpen cmd_getAssertions ParClose
+    | ParOpen cmd_getAssignment ParClose
+    | ParOpen cmd_getInfo info_flag ParClose
+    | ParOpen cmd_getModel ParClose
+    | ParOpen cmd_getOption keyword ParClose
+    | ParOpen cmd_getProof ParClose
+    | ParOpen cmd_getUnsatAssumptions ParClose
+    | ParOpen cmd_getUnsatCore ParClose
+    | ParOpen cmd_getValue ParOpen term+ ParClose ParClose
+    | ParOpen cmd_pop numeral ParClose
+    | ParOpen cmd_push numeral ParClose
+    | ParOpen cmd_reset ParClose
+    | ParOpen cmd_resetAssertions ParClose
+    | ParOpen cmd_setInfo attribute ParClose
+    | ParOpen cmd_setLogic symbol ParClose
+    | ParOpen cmd_setOption option ParClose
     ;
 
 

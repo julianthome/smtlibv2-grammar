@@ -52,8 +52,6 @@ public class TestSmt2 {
 
         for (File fil : base.listFiles()) {
             LOGGER.info("test {}", fil);
-            if(!fil.getName().contains("test1"))
-                continue;
 
             try {
                 gp.parse(fil, "start", GenericParser
