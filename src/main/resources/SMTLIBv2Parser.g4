@@ -37,13 +37,6 @@ Comment
     : Semicolon ~[\r\n]* -> skip
     ;
 
-String
-    : '"' (PrintableChar | WhiteSpaceChar)+ '"'
-    ;
-
-QuotedSymbol:
-    '|' (PrintableCharNoBackslash | WhiteSpaceChar)+ '|'
-    ;
 
 ParOpen
     : '('
@@ -55,6 +48,14 @@ ParClose
 
 Semicolon
     : ';'
+    ;
+
+String
+    : '"' (PrintableCharNoDquote | WhiteSpaceChar)+ '"'
+    ;
+
+QuotedSymbol:
+    '|' (PrintableCharNoBackslash | WhiteSpaceChar)+ '|'
     ;
 
 
@@ -301,6 +302,7 @@ fragment Sym
     | '<'
     | '>'
     | '@'
+    | '.'
     ;
 
 
@@ -311,6 +313,13 @@ fragment BinaryDigit
 
 fragment PrintableChar
     : '\u0020' .. '\u007E'
+    | '\u0080' .. '\uffff'
+    | EscapedSpace
+    ;
+
+fragment PrintableCharNoDquote
+    : '\u0020' .. '\u0021'
+    | '\u0023' .. '\u007E'
     | '\u0080' .. '\uffff'
     | EscapedSpace
     ;
@@ -686,7 +695,6 @@ term
     | ParOpen GRW_Exists ParOpen sorted_var+ ParClose term ParClose
     | ParOpen GRW_Match term ParOpen match_case+ ParClose ParClose
     | ParOpen GRW_Exclamation term attribute+ ParClose
-    | ParOpen PS_Not term ParClose
     ;
 
 

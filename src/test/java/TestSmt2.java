@@ -52,24 +52,19 @@ public class TestSmt2 {
 
 
         for (File fil : base.listFiles()) {
-            LOGGER.info("test {}", fil);
-
-//            if(!fil.getName().contains("test3"))
-//                continue;
-
             try {
                 ParserRuleContext pctx = gp.parse(fil, "start", GenericParser
                         .CaseSensitiveType.NONE);
 
-
             } catch (IllegalWorkflowException |
                     ParsingException | FileNotFoundException e) {
-                LOGGER.error(e.getMessage());
+                LOGGER.error("error while parsing {}: {}", fil.getName(), e
+                        .getMessage
+                                ());
                 Assert.assertTrue(false);
             }
-
-
-            LOGGER.info("file {}", dlist.getAst().toDot());
+            LOGGER.info("successfully parsed {}", fil);
+            LOGGER.debug("file {}", dlist.getAst().toDot());
         }
 
 
