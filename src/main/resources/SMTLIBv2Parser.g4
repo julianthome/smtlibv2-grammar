@@ -36,7 +36,7 @@ grammar SMTLIBv2Parser;
 Comment
     : Semicolon ~[\r\n]* -> skip
     ;
-    
+
 String
     : '"' (PrintableChar | WhiteSpaceChar)+ '"'
     ;
