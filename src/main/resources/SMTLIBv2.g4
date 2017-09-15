@@ -27,7 +27,7 @@
  * SOFTWARE.
  **/
 
-grammar SMTLIBv2Parser;
+grammar SMTLIBv2;
 
 
 // Lexer Rules Start
