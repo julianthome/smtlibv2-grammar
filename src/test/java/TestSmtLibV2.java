@@ -25,7 +25,7 @@ public class TestSmtLibV2 {
     public void testParser() {
 
         String gfile = TestSmtLibV2.class.getClassLoader().getResource
-                ("SMTLIBv2Parser.g4")
+                ("SMTLIBv2.g4")
                 .getFile();
 
         File f = new File(gfile);
