@@ -32,12 +32,17 @@ grammar SMTLIBv2Parser;
 
 // Lexer Rules Start
 
+
+Comment
+    : Semicolon ~[\r\n]* -> skip
+    ;
+    
 String
     : '"' (PrintableChar | WhiteSpaceChar)+ '"'
     ;
 
-QuotedSymbol
-    : '|' (PrintableCharNoBackslash | WhiteSpaceChar)+ '|'
+QuotedSymbol:
+    '|' (PrintableCharNoBackslash | WhiteSpaceChar)+ '|'
     ;
 
 ParOpen
@@ -48,40 +53,66 @@ ParClose
     : ')'
     ;
 
+Semicolon
+    : ';'
+    ;
+
+
+// Predefined Symbols
+
+PS_Not
+    : 'not'
+    ;
+PS_Bool
+    : 'Bool'
+    ;
+PS_ContinuedExecution
+    : 'continued-execution'
+    ;
+PS_Error
+    : 'error'
+    ;
+PS_False
+    : 'false'
+    ;
+PS_ImmediateExit
+    : 'immediate-exit'
+    ;
+PS_Incomplete
+    : 'incomplete'
+    ;
+PS_Logic
+    : 'logic'
+    ;
+PS_Memout
+    : 'memout'
+    ;
+PS_Sat
+    : 'sat'
+    ;
+PS_Success
+    : 'success'
+    ;
+PS_Theory
+    : 'theory'
+    ;
+PS_True
+    : 'true'
+    ;
+PS_Unknown
+    : 'unknown'
+    ;
+PS_Unsupported
+    : 'unsupported'
+    ;
+PS_Unsat
+    : 'unsat'
+    ;
+
+// RESERVED Words
+
 // Command names
 
-fragment Command
-    : CMD_Assert
-    | CMD_CheckSat
-    | CMD_CheckSatAssuming
-    | CMD_DeclareConst
-    | CMD_DeclareDatatype
-    | CMD_DeclareDatatypes
-    | CMD_DeclareFun
-    | CMD_DeclareSort
-    | CMD_DefineFun
-    | CMD_DefineFunRec
-    | CMD_DefineFunsRec
-    | CMD_DefineSort
-    | CMD_Echo
-    | CMD_Exit
-    | CMD_GetAssertions
-    | CMD_GetAssignment
-    | CMD_GetInfo
-    | CMD_GetModel
-    | CMD_GetOption
-    | CMD_GetProof
-    | CMD_GetUnsatAssumptions
-    | CMD_GetUnsatCore
-    | CMD_GetValue
-    | CMD_Pop
-    | CMD_Push
-    | CMD_Reset
-    | CMD_ResetAssertions
-    | CMD_SetInfo
-    | CMD_SetLogic
-    | CMD_SetOption
-    ;
 
 CMD_Assert
     : 'assert'
@@ -177,9 +208,46 @@ CMD_SetOption
 
 
 
-SimpleSymbol
-    : PredefSymbol
-    | Sym (Digit | Sym)*
+// General reserved words
+
+GRW_Exclamation
+    : '!'
+    ;
+GRW_Underscore
+    : '_'
+    ;
+GRW_As
+    : 'as'
+    ;
+GRW_Binary
+    : 'BINARY'
+    ;
+GRW_Decimal
+    : 'DECIMAL'
+    ;
+GRW_Exists
+    : 'exists'
+    ;
+GRW_Hexadecimal
+    : 'HEXADECIMAL'
+    ;
+GRW_Forall
+    : 'forall'
+    ;
+GRW_Let
+    : 'let'
+    ;
+GRW_Match
+    : 'match'
+    ;
+GRW_Numeral
+    : 'NUMERAL'
+    ;
+GRW_Par
+    : 'par'
+    ;
+GRW_String
+    : 'string'
     ;
 
 Numeral
@@ -187,123 +255,90 @@ Numeral
     | [1-9] Digit*
     ;
 
-
-// Predefined Symbols
-
-PredefSymbol
-    : PS_Not
-    | PS_Bool
-    | PS_ContinuedExecution
-    | PS_Error
-    | PS_False
-    | PS_ImmediateExit
-    | PS_Incomplete
-    | PS_Logic
-    | PS_Memout
-    | PS_Sat
-    | PS_Success
-    | PS_Theory
-    | PS_True
-    | PS_Unknown
-    | PS_Unsupported
-    | PS_Unsat
+Binary:
+    BinaryDigit+
     ;
 
-PS_Not
-    : 'not'
-    ;
-PS_Bool
-    : 'Bool'
-    ;
-PS_ContinuedExecution
-    : 'continued-execution'
-    ;
-PS_Error
-    : 'error'
-    ;
-PS_False
-    : 'false'
-    ;
-PS_ImmediateExit
-    : 'immediate-exit'
-    ;
-PS_Incomplete
-    : 'incomplete'
-    ;
-PS_Logic
-    : 'logic'
-    ;
-PS_Memout
-    : 'memout'
-    ;
-PS_Sat
-    : 'sat'
-    ;
-PS_Success
-    : 'success'
-    ;
-PS_Theory
-    : 'theory'
-    ;
-PS_True
-    : 'true'
-    ;
-PS_Unknown
-    : 'unknown'
-    ;
-PS_Unsupported
-    : 'unsupported'
-    ;
-PS_Unsat
-    : 'unsat'
+HexDecimal
+    : '#x' HexDigit HexDigit HexDigit HexDigit
     ;
 
+Decimal
+    : Numeral '.' '0'* Numeral
+    ;
+
+
+
+fragment HexDigit
+    : '0' .. '9' | 'a' .. 'f' | 'A' .. 'F'
+    ;
+
+
+Colon
+    : ':'
+    ;
+
+fragment Digit
+    : [0-9]
+    ;
+
+fragment Sym
+    : 'a'..'z'
+    | 'A' .. 'Z'
+    | '+'
+    | '='
+    | '/'
+    | '*'
+    | '%'
+    | '?'
+    | '!'
+    | '$'
+    | '-'
+    | '_'
+    | '~'
+    | '&'
+    | '^'
+    | '<'
+    | '>'
+    | '@'
+    ;
+
+
+
+fragment BinaryDigit
+    : [01]
+    ;
+
+fragment PrintableChar
+    : '\u0020' .. '\u007E'
+    | '\u0080' .. '\uffff'
+    | EscapedSpace
+    ;
+
+fragment PrintableCharNoBackslash
+    : '\u0020' .. '\u005B'
+    | '\u005D' .. '\u007B'
+    | '\u007D' .. '\u007E'
+    | '\u0080' .. '\uffff'
+    | EscapedSpace
+    ;
+
+fragment EscapedSpace
+    : '""'
+    ;
+
+fragment WhiteSpaceChar
+    : '\u0009'
+    | '\u000A'
+    | '\u000D'
+    | '\u0020'
+    ;
+
+// Lexer Rules End
 
 // Predefined Keywords
 
-fragment PredefKeyword
-    : PK_AllStatistics
-    | PK_AssertionStackLevels
-    | PK_Authors
-    | PK_Category
-    | PK_Chainable
-    | PK_Definition
-    | PK_DiagnosticOutputChannel
-    | PK_ErrorBehaviour
-    | PK_Extension
-    | PK_Funs
-    | PK_FunsDescription
-    | PK_GlobalDeclarations
-    | PK_InteractiveMode
-    | PK_Language
-    | PK_LeftAssoc
-    | PK_License
-    | PK_Name
-    | PK_Named
-    | PK_Notes
-    | PK_Pattern
-    | PK_PrintSuccess
-    | PK_ProduceAssertions
-    | PK_ProduceAssignments
-    | PK_ProduceModels
-    | PK_ProduceProofs
-    | PK_ProduceUnsatAssumptions
-    | PK_ProduceUnsatCores
-    | PK_RandomSeed
-    | PK_ReasonUnknown
-    | PK_RegularOutputChannel
-    | PK_ReproducibleResourceLimit
-    | PK_RightAssoc
-    | PK_SmtLibVersion
-    | PK_Sorts
-    | PK_SortsDescription
-    | PK_Source
-    | PK_Status
-    | PK_Theories
-    | PK_Values
-    | PK_Verbosity
-    | PK_Version
-    ;
+
 
 PK_AllStatistics
     : ':all-statistics'
@@ -353,11 +388,11 @@ PK_LeftAssoc
 PK_License
     : ':license'
     ;
-PK_Name
-    : ':name'
-    ;
 PK_Named
     : ':named'
+    ;
+PK_Name
+    : ':name'
     ;
 PK_Notes
     : ':notes'
@@ -429,19 +464,24 @@ PK_Version
     : ':version'
     ;
 
+UndefinedSymbol:
+    Sym (Digit | Sym)*;
 
-Keyword
-    : PredefKeyword
-    | Colon SimpleSymbol
+
+
+// Parser Rules Start
+
+// Starting rule(s)
+
+start
+    : script EOF
     ;
 
+response
+    : general_response EOF
+    ;
 
-// RESERVED Words
-
-
-// General reserved words
-
-fragment GeneralReservedWord
+generalReservedWord
     : GRW_Exclamation
     | GRW_Underscore
     | GRW_As
@@ -457,136 +497,85 @@ fragment GeneralReservedWord
     | GRW_String
     ;
 
-GRW_Exclamation
-    : '!'
-    ;
-GRW_Underscore
-    : '_'
-    ;
-GRW_As
-    : 'as'
-    ;
-GRW_Binary
-    : 'BINARY'
-    ;
-GRW_Decimal
-    : 'DECIMAL'
-    ;
-GRW_Exists
-    : 'exists'
-    ;
-GRW_Hexadecimal
-    : 'HEXADECIMAL'
-    ;
-GRW_Forall
-    : 'forall'
-    ;
-GRW_Let
-    : 'let'
-    ;
-GRW_Match
-    : 'match'
-    ;
-GRW_Numeral
-    : 'NUMERAL'
-    ;
-GRW_Par
-    : 'par'
-    ;
-GRW_String
-    : 'string'
+
+simpleSymbol
+    : predefSymbol
+    | UndefinedSymbol
     ;
 
-fragment Colon
-    : ':'
+quotedSymbol
+    : QuotedSymbol
     ;
 
-fragment Digit
-    : [0-9]
+predefSymbol
+    : PS_Not
+    | PS_Bool
+    | PS_ContinuedExecution
+    | PS_Error
+    | PS_False
+    | PS_ImmediateExit
+    | PS_Incomplete
+    | PS_Logic
+    | PS_Memout
+    | PS_Sat
+    | PS_Success
+    | PS_Theory
+    | PS_True
+    | PS_Unknown
+    | PS_Unsupported
+    | PS_Unsat
     ;
 
-fragment Sym
-    : 'a'..'z'
-    | 'A' .. 'Z'
-    | '+'
-    | '='
-    | '/'
-    | '*'
-    | '%'
-    | '?'
-    | '!'
-    | '$'
-    | '-'
-    | '_'
-    | '~'
-    | '&'
-    | '^'
-    | '<'
-    | '>'
-    | '@'
-    ;
-
-
-Binary:
-    BinaryDigit+
-    ;
-
-HexDigit
-    : '0' .. '9' | 'a' .. 'f' | 'A' .. 'F'
-    ;
-
-HexDecimal
-    : '#x' HexDigit HexDigit HexDigit HexDigit
-    ;
-
-Decimal
-    : Numeral '.' '0'* Numeral
-    ;
-
-
-fragment BinaryDigit
-    : [01]
-    ;
-
-fragment PrintableChar
-    : '\u0020' .. '\u007E'
-    | '\u0080' .. '\uffff'
-    | EscapedSpace
-    ;
-
-fragment PrintableCharNoBackslash
-    : '\u0020' .. '\u005B'
-    | '\u005D' .. '\u007B'
-    | '\u007D' .. '\u007E'
-    | '\u0080' .. '\uffff'
-    | EscapedSpace
-    ;
-
-fragment EscapedSpace
-    : '""'
-    ;
-
-fragment WhiteSpaceChar
-    : '\u0009' | '\u000A' | '\u000D' | '\u0020'
+predefKeyword
+    : PK_AllStatistics
+    | PK_AssertionStackLevels
+    | PK_Authors
+    | PK_Category
+    | PK_Chainable
+    | PK_Definition
+    | PK_DiagnosticOutputChannel
+    | PK_ErrorBehaviour
+    | PK_Extension
+    | PK_Funs
+    | PK_FunsDescription
+    | PK_GlobalDeclarations
+    | PK_InteractiveMode
+    | PK_Language
+    | PK_LeftAssoc
+    | PK_License
+    | PK_Named
+    | PK_Name
+    | PK_Notes
+    | PK_Pattern
+    | PK_PrintSuccess
+    | PK_ProduceAssertions
+    | PK_ProduceAssignments
+    | PK_ProduceModels
+    | PK_ProduceProofs
+    | PK_ProduceUnsatAssumptions
+    | PK_ProduceUnsatCores
+    | PK_RandomSeed
+    | PK_ReasonUnknown
+    | PK_RegularOutputChannel
+    | PK_ReproducibleResourceLimit
+    | PK_RightAssoc
+    | PK_SmtLibVersion
+    | PK_Sorts
+    | PK_SortsDescription
+    | PK_Source
+    | PK_Status
+    | PK_Theories
+    | PK_Values
+    | PK_Verbosity
+    | PK_Version
     ;
 
 
 
-// Lexer Rules End
-
-// Parser Rules Start
-
-// Starting rule(s)
-
-start
-    : script EOF
+symbol
+    : simpleSymbol
+    | quotedSymbol
     ;
-
-response
-    : general_response EOF
-    ;
-
-// Lexicon
 
 numeral
     : Numeral
@@ -608,13 +597,9 @@ string
     : String
     ;
 
-symbol
-    : SimpleSymbol
-    | QuotedSymbol
-    ;
-
 keyword
-    : Keyword
+    : predefKeyword
+    | Colon simpleSymbol
     ;
 
 // S-expression
@@ -644,7 +629,7 @@ index
 
 identifier
     : symbol
-    | ParOpen '_' symbol index+ ParClose
+    | ParOpen GRW_Underscore symbol index+ ParClose
     ;
 
 // Attributes
@@ -1099,9 +1084,7 @@ general_response
 
 // Parser Rules End
 
-Comment
-    : ';' ~[\r\n]* -> channel(HIDDEN)
-    ;
+
 
 WS  :  [ \t\r\n]+ -> skip
     ;

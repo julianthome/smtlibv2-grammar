@@ -1,3 +1,4 @@
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -53,12 +54,13 @@ public class TestSmt2 {
         for (File fil : base.listFiles()) {
             LOGGER.info("test {}", fil);
 
+//            if(!fil.getName().contains("test3"))
+//                continue;
+
             try {
-                gp.parse(fil, "start", GenericParser
+                ParserRuleContext pctx = gp.parse(fil, "start", GenericParser
                         .CaseSensitiveType.NONE);
 
-
-                LOGGER.debug("St {}", dlist.getAst().toString());
 
             } catch (IllegalWorkflowException |
                     ParsingException | FileNotFoundException e) {
