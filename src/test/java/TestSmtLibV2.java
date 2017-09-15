@@ -12,9 +12,9 @@ import org.snt.inmemantlr.listener.DefaultTreeListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 
-public class TestSmt2 {
+public class TestSmtLibV2 {
 
-    final static Logger LOGGER = LoggerFactory.getLogger(TestSmt2.class);
+    final static Logger LOGGER = LoggerFactory.getLogger(TestSmtLibV2.class);
 
     private static GenericParser gp = null;
 
@@ -24,7 +24,7 @@ public class TestSmt2 {
     @Test
     public void testParser() {
 
-        String gfile = TestSmt2.class.getClassLoader().getResource
+        String gfile = TestSmtLibV2.class.getClassLoader().getResource
                 ("SMTLIBv2Parser.g4")
                 .getFile();
 
@@ -46,13 +46,15 @@ public class TestSmt2 {
             Assert.assertFalse(true);
         }
 
-        File base = new File(TestSmt2.class
+        File base = new File(TestSmtLibV2.class
                 .getClassLoader()
                 .getResource("examples").getFile());
 
 
         for (File fil : base.listFiles()) {
             try {
+
+                LOGGER.info("parse {}", fil.getName());
                 ParserRuleContext pctx = gp.parse(fil, "start", GenericParser
                         .CaseSensitiveType.NONE);
 
