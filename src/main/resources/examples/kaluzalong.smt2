@@ -1,3 +1,5 @@
+; taken from https://github.com/z3str/Z3-str/tree/master/benchmark
+
 (set-logic QF_S)
 
 (declare-fun I0_16 () Int)
