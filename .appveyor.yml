@@ -7,9 +7,9 @@ branches:
 build: off
 
 install:
-  - choco install jdk9 -params 'installdir=c:\\jdk9'
-  - SET JAVA_HOME=c:\\jdk9
-  - SET PATH=c:\\jdk9\bin;%PATH%
+  - choco install jdk10 -params 'installdir=c:\\jdk10'
+  - SET JAVA_HOME=c:\\jdk10
+  - SET PATH=c:\\jdk10\bin;%PATH%
 
 test_script:
   - mvn clean package
