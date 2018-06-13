@@ -66,7 +66,7 @@ public class TestSmtLibV2 {
                 Assert.assertTrue(false);
             }
             LOGGER.info("successfully parsed {}", fil);
-            LOGGER.debug("file {}", dlist.getAst().toDot());
+            LOGGER.debug("file {}", dlist.getParseTree().toDot());
         }
 
 
