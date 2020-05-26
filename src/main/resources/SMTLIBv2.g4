@@ -664,7 +664,7 @@ sort
 
 // Terms and Formulas
 
-qual_identifer
+qual_identifier
     : identifier
     | ParOpen GRW_As identifier sort ParClose
     ;
@@ -688,8 +688,8 @@ match_case
 
 term
     : spec_constant
-    | qual_identifer
-    | ParOpen qual_identifer term+ ParClose
+    | qual_identifier
+    | ParOpen qual_identifier term+ ParClose
     | ParOpen GRW_Let ParOpen var_binding+ ParClose term ParClose
     | ParOpen GRW_Forall ParOpen sorted_var+ ParClose term ParClose
     | ParOpen GRW_Exists ParOpen sorted_var+ ParClose term ParClose
