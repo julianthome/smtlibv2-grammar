@@ -2,9 +2,6 @@ language: java
 
 sudo : false
 
-jdk:
-  - oraclejdk9
-
 install:
   - mvn clean package
 
