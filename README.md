@@ -8,11 +8,9 @@ SMT-LIB language ([SMT-LIB Standard: Version
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)][licence]
 [![Linux Build Status](https://img.shields.io/travis/julianthome/smtlibv2-grammar/master.svg?label=Linux%20build)][travis]
-[![Windows Build status](https://img.shields.io/appveyor/ci/julianthome/smtlibv2-grammar/master.svg?label=Windows%20build)][appveyor]
 
 [licence]: https://opensource.org/licenses/mit
 [travis]: https://travis-ci.org/julianthome/smtlibv2-grammar
-[appveyor]: https://ci.appveyor.com/project/julianthome/smtlibv2-grammar
 
 # Licence
 
