@@ -4,6 +4,10 @@ smtlibv2-grammar is an [ANTLR v4](http://www.antlr.org/) grammar for the
 SMT-LIB language ([SMT-LIB Standard: Version
 2.6](http://smtlib.cs.uiowa.edu/language.shtml)).
 
+# Credits to Contributors
+I am very thankful for contributions in any shape or form (bugfixes, improvements, suggestions, comments). Many thanks to all contributors below for their valuabel help.
+- [Jake Vossen](https://github.com/jakevossen5), Bugfix: [binary digits should be prefixed by #b](https://github.com/julianthome/smtlibv2-grammar/pull/5)
+
 # Status
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)][licence]
